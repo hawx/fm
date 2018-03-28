@@ -8,31 +8,59 @@
     <h1>fm</h1>
 
     <div id="app">
-      <div class="carrier">
+      <fieldset class="carrier">
+        <h3>Carrier</h3>
         <div class="attack">
           <label>Attack</label>
-          <input type="range" v-model.number="attack" />
-          <output>{{ attack }}</output>
+          <input type="range" v-model.number="carrier.attack" />
+          <output>{{ carrier.attack }}</output>
         </div>
 
         <div class="sustain">
           <label>Sustain</label>
-          <input type="range" v-model.number="sustain" />
-          <output>{{ sustain }}</output>
+          <input type="range" v-model.number="carrier.sustain" />
+          <output>{{ carrier.sustain }}</output>
         </div>
 
         <div class="decay">
           <label>Decay</label>
-          <input type="range" v-model.number="decay" />
-          <output>{{ decay }}</output>
+          <input type="range" v-model.number="carrier.decay" />
+          <output>{{ carrier.decay }}</output>
         </div>
 
         <div class="release">
           <label>Release</label>
-          <input type="range" v-model.number="release" />
-          <output>{{ release }}</output>
+          <input type="range" v-model.number="carrier.release" />
+          <output>{{ carrier.release }}</output>
         </div>
-      </div>
+      </fieldset>
+
+      <fieldset class="modulator">
+        <h3>Modulator</h3>
+        <div class="attack">
+          <label>Attack</label>
+          <input type="range" v-model.number="modulator.attack" />
+          <output>{{ modulator.attack }}</output>
+        </div>
+
+        <div class="sustain">
+          <label>Sustain</label>
+          <input type="range" v-model.number="modulator.sustain" />
+          <output>{{ modulator.sustain }}</output>
+        </div>
+
+        <div class="decay">
+          <label>Decay</label>
+          <input type="range" v-model.number="modulator.decay" />
+          <output>{{ modulator.decay }}</output>
+        </div>
+
+        <div class="release">
+          <label>Release</label>
+          <input type="range" v-model.number="modulator.release" />
+          <output>{{ modulator.release }}</output>
+        </div>
+      </fieldset>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>

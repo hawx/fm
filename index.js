@@ -21,7 +21,7 @@ class Envelope {
 
   applyOff(gainNode, time) {
     gainNode.gain.cancelScheduledValues(0);
-    gainNode.gain.setValueAtTime(gainNode.gain.value, time);
+    // gainNode.gain.setValueAtTime(gainNode.gain.value, time);
     gainNode.gain.linearRampToValueAtTime(0, time + this.release);
   }
 }
@@ -79,12 +79,12 @@ class Carrier {
 
 class Synth {
   constructor(dest) {
-    const carrierEnvelope = new Envelope(0.01, 0.7, 0.4, 0);
-    this.carrier = new Carrier('sine', 500, carrierEnvelope);
+    this.carrierEnvelope = new Envelope(0.01, 0.7, 0.4, 0);
+    this.carrier = new Carrier('sine', 500, this.carrierEnvelope);
 
-    const modulatorEnvelope = new Envelope(0.01, 0.5, 0.3, 0.1);
-    this.modulator = new Modulator('sine', 100, 300, modulatorEnvelope);
-    this.otherModulator = new Modulator('sine', 500, 300 * Math.random(), modulatorEnvelope);
+    this.modulatorEnvelope = new Envelope(0.01, 0.5, 0.3, 0.1);
+    this.modulator = new Modulator('sine', 100, 300, this.modulatorEnvelope);
+    this.otherModulator = new Modulator('sine', 500, 300 * Math.random(), this.modulatorEnvelope);
 
     this.otherModulator.modulate(this.carrier);
     this.modulator.modulate(this.carrier);
@@ -142,25 +142,51 @@ function freqForKey(char) {
 const app = new Vue({
   el: '#app',
   data: {
-    attack: 50,
-    sustain: 50,
-    decay: 50,
-    release: 50
-  },
-  watch: {
-    attack(val) {
-      synth.carrier.envelope.attack = val / 100;
+    carrier: {
+      attack: 50,
+      sustain: 50,
+      decay: 50,
+      release: 50
     },
-    sustain(val) {
-      synth.carrier.envelope.sustain = val / 100;
-    },
-    decay(val) {
-      synth.carrier.envelope.decay = val / 100;
-    },
-    release(val) {
-      synth.carrier.envelope.release = val / 100;
+    modulator: {
+      attack: 50,
+      sustain: 50,
+      decay: 50,
+      release: 50
     }
   }
+});
+
+app.$watch('carrier.attack', (val) => {
+  synth.carrierEnvelope.attack = val / 100;
+});
+
+app.$watch('carrier.sustain', (val) => {
+  synth.carrierEnvelope.sustain = val / 100;
+});
+
+app.$watch('carrier.decay', (val) => {
+  synth.carrierEnvelope.decay = val / 100;
+});
+
+app.$watch('carrier.release', (val) => {
+  synth.carrierEnvelope.release = val / 100;
+});
+
+app.$watch('modulator.attack', (val) => {
+  synth.modulatorEnvelope.attack = val / 100;
+});
+
+app.$watch('modulator.sustain', (val) => {
+  synth.modulatorEnvelope.sustain = val / 100;
+});
+
+app.$watch('modulator.decay', (val) => {
+  synth.modulatorEnvelope.decay = val / 100;
+});
+
+app.$watch('modulator.release', (val) => {
+  synth.modulatorEnvelope.release = val / 100;
 });
 
 let isDown = false;
