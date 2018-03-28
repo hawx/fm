@@ -6,6 +6,36 @@
   </head>
   <body>
     <h1>fm</h1>
+
+    <div id="app">
+      <div class="carrier">
+        <div class="attack">
+          <label>Attack</label>
+          <input type="range" v-model.number="attack" />
+          <output>{{ attack }}</output>
+        </div>
+
+        <div class="sustain">
+          <label>Sustain</label>
+          <input type="range" v-model.number="sustain" />
+          <output>{{ sustain }}</output>
+        </div>
+
+        <div class="decay">
+          <label>Decay</label>
+          <input type="range" v-model.number="decay" />
+          <output>{{ decay }}</output>
+        </div>
+
+        <div class="release">
+          <label>Release</label>
+          <input type="range" v-model.number="release" />
+          <output>{{ release }}</output>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script src="index.js"></script>
   </body>
 </html>

@@ -3,35 +3,39 @@ const audioCtx = new AudioContext();
 const destination = audioCtx.createGain();
 destination.connect(audioCtx.destination);
 
-function Envelope(gainNode, attack, decay, sustain, release) {
-  return {
-    on(time, volume) {
-      gainNode.gain.cancelScheduledValues(time);
-      gainNode.gain.value = volume;
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + attack);
-      gainNode.gain.linearRampToValueAtTime(volume * sustain, time + attack + decay);
-    },
-    off(time) {
-      gainNode.gain.cancelScheduledValues(0);
-      gainNode.gain.setValueAtTime(gainNode.gain.value, time);
-      gainNode.gain.linearRampToValueAtTime(0, time + release);
-    }
-  };
+class Envelope {
+  constructor(attack, decay, sustain, release) {
+    this.attack = attack;
+    this.decay = decay;
+    this.sustain = sustain;
+    this.release = release;
+  }
+
+  applyOn(gainNode, time, volume) {
+    gainNode.gain.cancelScheduledValues(time);
+    gainNode.gain.value = volume;
+    gainNode.gain.setValueAtTime(0, time);
+    gainNode.gain.linearRampToValueAtTime(volume, time + this.attack);
+    gainNode.gain.linearRampToValueAtTime(volume * this.sustain, time + this.attack + this.decay);
+  }
+
+  applyOff(gainNode, time) {
+    gainNode.gain.cancelScheduledValues(0);
+    gainNode.gain.setValueAtTime(gainNode.gain.value, time);
+    gainNode.gain.linearRampToValueAtTime(0, time + this.release);
+  }
 }
 
 class Modulator {
-  constructor(type, freq, gain) {
+  constructor(type, freq, gain, envelope) {
     this.osc = audioCtx.createOscillator();
     this.gain = audioCtx.createGain();
     this.osc.type = type;
     this.osc.frequency.value = freq;
     this.gain.gain.value = gain;
+    this.envelope = envelope;
     this.osc.connect(this.gain);
-  }
-
-  env(attack, decay, sustain, release) {
-    this.envelope = Envelope(this.gain, attack, decay, sustain, release);
+    this.osc.start();
   }
 
   modulate(other) {
@@ -40,48 +44,47 @@ class Modulator {
   }
 
   on(freq, time) {
-    this.envelope.on(time, freq);
+    this.envelope.applyOn(this.gain, time, freq);
   }
 
   off(time) {
-    this.envelope.off(time);
+    this.envelope.applyOff(this.gain, time);
   }
 }
 
 class Carrier {
-  constructor(type, freq) {
+  constructor(type, freq, envelope) {
     this.osc = audioCtx.createOscillator();
     this.gain = audioCtx.createGain();
     this.osc.type = type;
     this.osc.frequency.value = freq;
+    this.envelope = envelope;
     this.osc.connect(this.gain);
     this.osc.start();
   }
 
   env(attack, decay, sustain, release) {
-    this.envelope = Envelope(this.gain, attack, decay, sustain, release);
+    this.envelope = Envelope(attack, decay, sustain, release);
   }
 
   on(freq, time) {
     this.osc.frequency.value = freq;
-    this.envelope.on(time, 1);
+    this.envelope.applyOn(this.gain, time, 1);
   }
 
   off(time) {
-    this.envelope.off(time);
+    this.envelope.applyOff(this.gain, time);
   }
 }
 
 class Synth {
   constructor(dest) {
-    this.carrier = new Carrier('sine', 300);
-    this.carrier.env(0.01, 0.7, 0.5, 0.1);
+    const carrierEnvelope = new Envelope(0.01, 0.7, 0.4, 0);
+    this.carrier = new Carrier('sine', 500, carrierEnvelope);
 
-    this.modulator = new Modulator('sine', 100, 300);
-    this.modulator.env(0.01, 0.5, 0.7, 0.4);
-
-    this.otherModulator = new Modulator('sine', 100*Math.random(), 300 *Math.random());
-    this.otherModulator.env(0.05, 0.3, 0.5, 0.1);
+    const modulatorEnvelope = new Envelope(0.01, 0.5, 0.3, 0.1);
+    this.modulator = new Modulator('sine', 100, 300, modulatorEnvelope);
+    this.otherModulator = new Modulator('sine', 500, 300 * Math.random(), modulatorEnvelope);
 
     this.otherModulator.modulate(this.carrier);
     this.modulator.modulate(this.carrier);
@@ -104,19 +107,6 @@ class Synth {
 }
 
 const synth = new Synth(destination);
-
-document.onkeydown = (e) => {
-  const freq = freqForKey(e.key);
-  if (freq) {
-    e.preventDefault();
-    synth.on(freq, audioCtx.currentTime);
-  }
-};
-
-document.onkeyup = (e) => {
-  e.preventDefault();
-  synth.off(audioCtx.currentTime);
-};
 
 function freqForKey(char) {
   switch (char) {
@@ -148,3 +138,49 @@ function freqForKey(char) {
     return null;
   }
 }
+
+const app = new Vue({
+  el: '#app',
+  data: {
+    attack: 50,
+    sustain: 50,
+    decay: 50,
+    release: 50
+  },
+  watch: {
+    attack(val) {
+      synth.carrier.envelope.attack = val / 100;
+    },
+    sustain(val) {
+      synth.carrier.envelope.sustain = val / 100;
+    },
+    decay(val) {
+      synth.carrier.envelope.decay = val / 100;
+    },
+    release(val) {
+      synth.carrier.envelope.release = val / 100;
+    }
+  }
+});
+
+let isDown = false;
+
+document.onkeydown = (e) => {
+  if (isDown) { return; }
+
+  const freq = freqForKey(e.key);
+  if (freq) {
+    e.preventDefault();
+    isDown = true;
+    synth.on(freq, audioCtx.currentTime);
+  }
+};
+
+document.onkeyup = (e) => {
+  const freq = freqForKey(e.key);
+  if (freq) {
+    e.preventDefault();
+    isDown = false;
+    synth.off(audioCtx.currentTime);
+  }
+};
