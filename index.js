@@ -39,7 +39,6 @@ class Modulator {
 
   modulate(other) {
     this.gain.connect(other.osc.frequency);
-    return other;
   }
 
   on(freq, time) {
@@ -137,15 +136,6 @@ function freqForKey(char) {
     return null;
   }
 }
-
-Vue.component('button-counter', {
-  data: function () {
-    return {
-      count: 0
-    };
-  },
-  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
-});
 
 Vue.component('envelope-settings', {
   props: ['title', 'attack', 'sustain', 'decay', 'release'],
