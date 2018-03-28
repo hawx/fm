@@ -21,7 +21,6 @@ class Envelope {
 
   applyOff(gainNode, time) {
     gainNode.gain.cancelScheduledValues(0);
-    // gainNode.gain.setValueAtTime(gainNode.gain.value, time);
     gainNode.gain.linearRampToValueAtTime(0, time + this.release);
   }
 }
@@ -139,54 +138,109 @@ function freqForKey(char) {
   }
 }
 
+Vue.component('button-counter', {
+  data: function () {
+    return {
+      count: 0
+    };
+  },
+  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+});
+
+Vue.component('envelope-settings', {
+  props: ['title', 'attack', 'sustain', 'decay', 'release'],
+  template: `
+    <fieldset>
+      <h3>{{ title }}</h3>
+      <div class="attack">
+        <label>Attack</label>
+        <input type="range" max="1" step="0.01" v-model.number="attack" />
+        <output>{{ attack }}</output>
+      </div>
+
+      <div class="sustain">
+        <label>Sustain</label>
+        <input type="range" max="1" step="0.01" v-model.number="sustain" />
+        <output>{{ sustain }}</output>
+      </div>
+
+      <div class="decay">
+        <label>Decay</label>
+        <input type="range" max="1" step="0.01" v-model.number="decay" />
+        <output>{{ decay }}</output>
+      </div>
+
+      <div class="release">
+        <label>Release</label>
+        <input type="range" max="1" step="0.01" v-model.number="release" />
+        <output>{{ release }}</output>
+      </div>
+    </fieldset>
+  `,
+  watch: {
+    attack(val) {
+      this.$emit('attack', val);
+    },
+    sustain(val) {
+      this.$emit('sustain', val);
+    },
+    decay(val) {
+      this.$emit('decay', val);
+    },
+    release(val) {
+      this.$emit('release', val);
+    }
+  }
+});
+
 const app = new Vue({
   el: '#app',
   data: {
     carrier: {
-      attack: 50,
-      sustain: 50,
-      decay: 50,
-      release: 50
+      attack: 0.01,
+      sustain: 0.7,
+      decay: 0.4,
+      release: 0
     },
     modulator: {
-      attack: 50,
-      sustain: 50,
-      decay: 50,
-      release: 50
+      attack: 0.01,
+      sustain: 0.5,
+      decay: 0.3,
+      release: 0.1
     }
   }
 });
 
 app.$watch('carrier.attack', (val) => {
-  synth.carrierEnvelope.attack = val / 100;
+  synth.carrierEnvelope.attack = val;
 });
 
 app.$watch('carrier.sustain', (val) => {
-  synth.carrierEnvelope.sustain = val / 100;
+  synth.carrierEnvelope.sustain = val;
 });
 
 app.$watch('carrier.decay', (val) => {
-  synth.carrierEnvelope.decay = val / 100;
+  synth.carrierEnvelope.decay = val;
 });
 
 app.$watch('carrier.release', (val) => {
-  synth.carrierEnvelope.release = val / 100;
+  synth.carrierEnvelope.release = val;
 });
 
 app.$watch('modulator.attack', (val) => {
-  synth.modulatorEnvelope.attack = val / 100;
+  synth.modulatorEnvelope.attack = val;
 });
 
 app.$watch('modulator.sustain', (val) => {
-  synth.modulatorEnvelope.sustain = val / 100;
+  synth.modulatorEnvelope.sustain = val;
 });
 
 app.$watch('modulator.decay', (val) => {
-  synth.modulatorEnvelope.decay = val / 100;
+  synth.modulatorEnvelope.decay = val;
 });
 
 app.$watch('modulator.release', (val) => {
-  synth.modulatorEnvelope.release = val / 100;
+  synth.modulatorEnvelope.release = val;
 });
 
 let isDown = false;

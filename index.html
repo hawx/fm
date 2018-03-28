@@ -8,59 +8,23 @@
     <h1>fm</h1>
 
     <div id="app">
-      <fieldset class="carrier">
-        <h3>Carrier</h3>
-        <div class="attack">
-          <label>Attack</label>
-          <input type="range" v-model.number="carrier.attack" />
-          <output>{{ carrier.attack }}</output>
-        </div>
+      <envelope-settings
+        title="Carrier"
+        v-bind="carrier"
+        v-on:attack="carrier.attack = $event"
+        v-on:sustain="carrier.sustain = $event"
+        v-on:decay="carrier.decay = $event"
+        v-on:release="carrier.release = $event">
+      </envelope-settings>
 
-        <div class="sustain">
-          <label>Sustain</label>
-          <input type="range" v-model.number="carrier.sustain" />
-          <output>{{ carrier.sustain }}</output>
-        </div>
-
-        <div class="decay">
-          <label>Decay</label>
-          <input type="range" v-model.number="carrier.decay" />
-          <output>{{ carrier.decay }}</output>
-        </div>
-
-        <div class="release">
-          <label>Release</label>
-          <input type="range" v-model.number="carrier.release" />
-          <output>{{ carrier.release }}</output>
-        </div>
-      </fieldset>
-
-      <fieldset class="modulator">
-        <h3>Modulator</h3>
-        <div class="attack">
-          <label>Attack</label>
-          <input type="range" v-model.number="modulator.attack" />
-          <output>{{ modulator.attack }}</output>
-        </div>
-
-        <div class="sustain">
-          <label>Sustain</label>
-          <input type="range" v-model.number="modulator.sustain" />
-          <output>{{ modulator.sustain }}</output>
-        </div>
-
-        <div class="decay">
-          <label>Decay</label>
-          <input type="range" v-model.number="modulator.decay" />
-          <output>{{ modulator.decay }}</output>
-        </div>
-
-        <div class="release">
-          <label>Release</label>
-          <input type="range" v-model.number="modulator.release" />
-          <output>{{ modulator.release }}</output>
-        </div>
-      </fieldset>
+      <envelope-settings
+        title="Modulator"
+        v-bind="modulator"
+        v-on:attack="modulator.attack = $event"
+        v-on:sustain="modulator.sustain = $event"
+        v-on:decay="modulator.decay = $event"
+        v-on:release="modulator.release = $event">
+      </envelope-settings>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
