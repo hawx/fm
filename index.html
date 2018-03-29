@@ -9,6 +9,15 @@
 
     <div id="app">
       <envelope-settings
+        v-for="envelope in envelopes"
+        v-bind="envelope"
+        v-on:attack="envelope.attack = $event"
+        v-on:sustain="envelope.sustain = $event"
+        v-on:decay="envelope.decay = $event"
+        v-on:release="envelope.release = $event">
+      </envelope-settings>
+
+      <envelope-settings
         title="Carrier"
         v-bind="carrier"
         v-on:attack="carrier.attack = $event"

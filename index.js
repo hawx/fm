@@ -85,52 +85,56 @@ Vue.component('envelope-settings', {
 const app = new Vue({
   el: '#app',
   data: {
-    carrier: {
-      attack: 0.01,
-      sustain: 0.7,
-      decay: 0.4,
-      release: 0
-    },
-    modulator: {
-      attack: 0.01,
-      sustain: 0.5,
-      decay: 0.3,
-      release: 0.1
-    }
+    envelopes: [
+      {
+        title: 'Op1',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }, {
+        title: 'Op2',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }, {
+        title: 'Op3',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }, {
+        title: 'Op4',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }, {
+        title: 'Op5',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }, {
+        title: 'Op6',
+        attack: 0.01,
+        sustain: 0.7,
+        decay: 0.4,
+        release: 0
+      }
+    ]
   }
 });
 
-app.$watch('carrier.attack', (val) => {
-  synth.carrierEnvelope.attack = val;
-});
-
-app.$watch('carrier.sustain', (val) => {
-  synth.carrierEnvelope.sustain = val;
-});
-
-app.$watch('carrier.decay', (val) => {
-  synth.carrierEnvelope.decay = val;
-});
-
-app.$watch('carrier.release', (val) => {
-  synth.carrierEnvelope.release = val;
-});
-
-app.$watch('modulator.attack', (val) => {
-  synth.modulatorEnvelope.attack = val;
-});
-
-app.$watch('modulator.sustain', (val) => {
-  synth.modulatorEnvelope.sustain = val;
-});
-
-app.$watch('modulator.decay', (val) => {
-  synth.modulatorEnvelope.decay = val;
-});
-
-app.$watch('modulator.release', (val) => {
-  synth.modulatorEnvelope.release = val;
-});
+app.$watch('envelopes', (val) => {
+  for (let i = 0; i < 6; i++) {
+    synth.operators[i].envelope.attack = val[i].attack;
+    synth.operators[i].envelope.sustain = val[i].sustain;
+    synth.operators[i].envelope.decay = val[i].decay;
+    synth.operators[i].envelope.release = val[i].release;
+  }
+}, { deep: true });
 
 let isDown = false;
 

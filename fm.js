@@ -103,23 +103,6 @@ function algorithm1(audioCtx, dest) {
   return [op1, op2, op3, op4, op5, op6];
 }
 
-function basicAlgorithm(audioCtx, dest) {
-  const carrierEnvelope = new Envelope(0.01, 0.7, 0.4, 0);
-  const carrier = new Carrier(audioCtx, 'sine', 500, carrierEnvelope);
-
-  const modulatorEnvelope = new Envelope(0.01, 0.5, 0.3, 0.1);
-  const modulator = new Modulator(audioCtx, 'sine', 100, 300, modulatorEnvelope);
-  const otherModulator = new Modulator(audioCtx, 'sine', 500, 300 * Math.random(), modulatorEnvelope);
-
-  otherModulator.modulate(carrier);
-  modulator.modulate(carrier);
-  modulator.modulate(modulator);
-  carrier.gain.gain.value = 0;
-  carrier.gain.connect(dest);
-
-  return [carrier, modulator, otherModulator];
-}
-
 class Synth {
   constructor(audioCtx, dest) {
     this.operators = algorithm1(audioCtx, dest);
